@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Electric Charge &amp; Force Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,440;0,9..144,600;1,9..144,500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F6F3EC;
+    --panel: #FFFFFF;
+    --panel-border: #E5E0D2;
+    --text: #201E27;
+    --text-secondary: #6E6A5C;
+    --accent: #C97A1A;
+    --accent-soft: #F1DEC0;
+    --correct: #2E8B57;
+    --correct-soft: #DCEEE1;
+    --incorrect: #C1443B;
+    --incorrect-soft: #F5DEDA;
+    --bar-empty: #E5E0D2;
+    --focus-ring: #6E6A5C;
+    --charge-pos: #C1443B;
+    --charge-neg: #2E5FA3;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #12141C;
+      --panel: #1C2030;
+      --panel-border: #2C3044;
+      --text: #ECEDF2;
+      --text-secondary: #9AA0B4;
+      --accent: #F0AC3F;
+      --accent-soft: #3A2E17;
+      --correct: #6FCF97;
+      --correct-soft: #1E3327;
+      --incorrect: #FF8177;
+      --incorrect-soft: #3A2020;
+      --bar-empty: #2C3044;
+      --focus-ring: #F0AC3F;
+      --charge-pos: #FF8177;
+      --charge-neg: #6FA8F5;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #12141C;
+    --panel: #1C2030;
+    --panel-border: #2C3044;
+    --text: #ECEDF2;
+    --text-secondary: #9AA0B4;
+    --accent: #F0AC3F;
+    --accent-soft: #3A2E17;
+    --correct: #6FCF97;
+    --correct-soft: #1E3327;
+    --incorrect: #FF8177;
+    --incorrect-soft: #3A2020;
+    --bar-empty: #2C3044;
+    --focus-ring: #F0AC3F;
+    --charge-pos: #FF8177;
+    --charge-neg: #6FA8F5;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100%;
+  }
+
+  body {
+    font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 32px 16px 64px;
+    line-height: 1.5;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 560px;
+  }
+
+  header.hero {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 28px;
+  }
+
+  .charge-pair {
+    flex: none;
+    position: relative;
+    width: 64px;
+    height: 64px;
+  }
+
+  .charge {
+    position: absolute;
+    top: 50%;
+    width: 24px;
+    height: 24px;
+    margin-top: -12px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #FFFFFF;
+  }
+
+  .charge.plus {
+    left: 2px;
+    background: var(--charge-pos);
+    animation: moveRight 2.3s ease-in-out infinite alternate;
+  }
+
+  .charge.minus {
+    right: 2px;
+    background: var(--charge-neg);
+    animation: moveLeft 2.3s ease-in-out infinite alternate;
+  }
+
+  @keyframes moveRight {
+    from { transform: translateX(0); }
+    to   { transform: translateX(13px); }
+  }
+
+  @keyframes moveLeft {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-13px); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .charge.plus, .charge.minus { animation: none; }
+  }
+
+  h1 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 600;
+    font-style: italic;
+    font-size: 1.55rem;
+    margin: 0 0 4px;
+    letter-spacing: -0.01em;
+  }
+
+  .subtitle {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+    max-width: 34ch;
+  }
+
+  .bars {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 6px;
+    margin-bottom: 26px;
+  }
+
+  .bar {
+    height: 26px;
+    border-radius: 4px;
+    background: var(--bar-empty);
+    border: none;
+    padding: 0;
+    cursor: default;
+    transition: background 0.25s ease, transform 0.15s ease;
+  }
+
+  .bar.visited { cursor: pointer; }
+  .bar.visited:hover { transform: scaleY(1.12); }
+  .bar.current { background: var(--accent); }
+  .bar.correct { background: var(--correct); }
+  .bar.incorrect { background: var(--incorrect); }
+  .bar:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 14px;
+    padding: 28px 26px 24px;
+  }
+
+  .q-count {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    margin: 0 0 10px;
+  }
+
+  .prompt {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin: 0 0 18px;
+    line-height: 1.45;
+  }
+
+  .hint-toggle {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0 0 16px;
+    cursor: pointer;
+    display: block;
+  }
+
+  .hint-toggle:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 3px; }
+
+  .hint-text {
+    display: none;
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    background: var(--accent-soft);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin: -8px 0 16px;
+  }
+
+  .hint-text.shown { display: block; }
+
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+
+  .option {
+    text-align: left;
+    font-family: inherit;
+    font-size: 0.96rem;
+    color: var(--text);
+    background: var(--bg);
+    border: 1px solid var(--panel-border);
+    border-left: 4px solid var(--panel-border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+
+  .option:hover:not(:disabled) {
+    border-left-color: var(--accent);
+  }
+
+  .option:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+
+  .option:disabled { cursor: default; }
+
+  .option.chosen-correct {
+    border-left-color: var(--correct);
+    background: var(--correct-soft);
+  }
+
+  .option.chosen-incorrect {
+    border-left-color: var(--incorrect);
+    background: var(--incorrect-soft);
+  }
+
+  .option.reveal-correct {
+    border-left-color: var(--correct);
+  }
+
+  .feedback {
+    margin-top: 16px;
+    padding: 14px 16px;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    display: none;
+  }
+
+  .feedback.shown { display: block; }
+  .feedback.is-correct { background: var(--correct-soft); }
+  .feedback.is-incorrect { background: var(--incorrect-soft); }
+
+  .feedback strong { display: block; margin-bottom: 4px; }
+  .feedback.is-correct strong { color: var(--correct); }
+  .feedback.is-incorrect strong { color: var(--incorrect); }
+
+  .nav-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 22px;
+  }
+
+  .btn {
+    font-family: inherit;
+    font-size: 0.92rem;
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 1px solid var(--panel-border);
+    background: transparent;
+    color: var(--text);
+  }
+
+  .btn:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+  .btn:disabled { opacity: 0.4; cursor: default; }
+
+  .btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #241804;
+  }
+
+  .results {
+    text-align: center;
+  }
+
+  .score-big {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 3.2rem;
+    font-weight: 600;
+    margin: 6px 0 4px;
+  }
+
+  .score-label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin: 0 0 20px;
+  }
+
+  .score-msg {
+    font-size: 1rem;
+    margin: 0 0 24px;
+  }
+
+  .retake {
+    margin: 0 auto;
+    display: inline-block;
+  }
+
+  footer {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+    margin-top: 28px;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="hero">
+    <div class="charge-pair" aria-hidden="true">
+      <span class="charge plus">+</span>
+      <span class="charge minus">−</span>
+    </div>
+    <div>
+      <h1>Electric Charge &amp; Force</h1>
+      <p class="subtitle">10 questions on charge, conductors, induction &amp; Coulomb's Law.</p>
+    </div>
+  </header>
+
+  <div class="bars" id="bars" role="tablist" aria-label="Question progress"></div>
+
+  <main class="card" id="card"></main>
+
+  <footer>Based on Module 18, Lessons 1–2 — Electric Charge &amp; Electrostatic Force</footer>
+</div>
+
+<script>
+(function () {
+  var QUESTIONS = [
+    {
+      id: "q1",
+      prompt: "What happens when you rub two neutral objects together, like a rubber shoe on a wool rug?",
+      options: [
+        { id: "a", text: "Electrons transfer from one object to the other, giving each a net charge while the total charge of the system stays the same" },
+        { id: "b", text: "New electric charge is created on both objects" },
+        { id: "c", text: "Protons transfer from one object to the other" },
+        { id: "d", text: "Both objects lose charge and become more neutral" }
+      ],
+      correct: "a",
+      explanation: "Rubbing separates charge by transferring electrons between materials — it does not create or destroy charge. This is charge conservation: the total charge before and after rubbing is the same.",
+      correctFeedback: "Exactly — charge is conserved.",
+      incorrectFeedback: "Think about which particles actually move during rubbing."
+    },
+    {
+      id: "q2",
+      prompt: "Two strips of tape are prepared identically and become charged the same way. What happens when you bring them close together?",
+      options: [
+        { id: "a", text: "They repel each other, because like charges always repel" },
+        { id: "b", text: "They attract each other, because unlike charges attract" },
+        { id: "c", text: "Nothing happens, because both strips are neutral" },
+        { id: "d", text: "They attract because their charges cancel out" }
+      ],
+      correct: "a",
+      explanation: "Two objects charged the same way carry like charges, and like charges always repel — this is exactly the tape-strip demonstration used to establish that there are two types of charge.",
+      correctFeedback: "Right — like charges repel.",
+      incorrectFeedback: "Remember: these two strips were charged the same way."
+    },
+    {
+      id: "q3",
+      prompt: "What is the key difference between an electric conductor and an insulator?",
+      options: [
+        { id: "a", text: "In a conductor, charge can move freely through the material; in an insulator, charge stays localized where it's placed" },
+        { id: "b", text: "A conductor always carries more total charge than an insulator" },
+        { id: "c", text: "An insulator can hold more charge overall than a conductor" },
+        { id: "d", text: "A conductor is always positively charged, and an insulator is always negatively charged" }
+      ],
+      correct: "a",
+      explanation: "The defining difference is mobility of charge: conductors like metals let electrons move freely throughout the material, while insulators like glass or dry wood keep charge fixed wherever it was placed.",
+      correctFeedback: "That's correct.",
+      incorrectFeedback: "Think about what actually moves (or doesn't) inside each type of material."
+    },
+    {
+      id: "q4",
+      prompt: "A charge of −2.0×10⁻⁴ C and a charge of +8.0×10⁻⁴ C are separated by 0.30 m. What is the magnitude of the force between them? (k = 9.0×10⁹ N·m²/C²)",
+      hint: "F = k·q_A·q_B / r²",
+      options: [
+        { id: "a", text: "1.6×10⁴ N" },
+        { id: "b", text: "4.8×10³ N" },
+        { id: "c", text: "1.6×10² N" },
+        { id: "d", text: "160 N" }
+      ],
+      correct: "a",
+      explanation: "F = (9.0×10⁹)(2.0×10⁻⁴)(8.0×10⁻⁴)/(0.30)² = (9.0×10⁹)(1.6×10⁻⁷)/0.09 ≈ 1.6×10⁴ N. Forgetting to square r gives 4.8×10³ N instead.",
+      correctFeedback: "That's the right magnitude.",
+      incorrectFeedback: "Check whether you squared the distance before dividing."
+    },
+    {
+      id: "q5",
+      prompt: "A charge of −6.0×10⁻⁶ C exerts an attractive force of 65 N on a second charge 0.050 m away. What is the magnitude of the second charge?",
+      hint: "Solve F = k·q_A·q_B / r² for q_B.",
+      options: [
+        { id: "a", text: "3.0×10⁻⁶ C" },
+        { id: "b", text: "6.0×10⁻⁵ C" },
+        { id: "c", text: "6.0×10⁻⁶ C" },
+        { id: "d", text: "3.0×10⁻⁵ C" }
+      ],
+      correct: "a",
+      explanation: "q_B = F·r² / (k·q_A) = (65)(0.050)² / [(9.0×10⁹)(6.0×10⁻⁶)] ≈ 3.0×10⁻⁶ C. Forgetting to square r gives 6.0×10⁻⁵ C, and assuming the two charges must be equal gives 6.0×10⁻⁶ C — but Coulomb's law doesn't require that.",
+      correctFeedback: "That's the right magnitude.",
+      incorrectFeedback: "Make sure you isolated q_B correctly and squared r."
+    },
+    {
+      id: "q6",
+      prompt: "What is 'charging by induction'?",
+      options: [
+        { id: "a", text: "Giving a neutral object a net charge by bringing a charged object near it, without letting them touch" },
+        { id: "b", text: "Giving an object a net charge by directly touching it with a charged object" },
+        { id: "c", text: "Removing all excess charge from an object by connecting it to the ground" },
+        { id: "d", text: "Transferring charge by rubbing two objects together" }
+      ],
+      correct: "a",
+      explanation: "Charging by induction separates charge on a nearby neutral object just by bringing a charged object close — no contact is needed, unlike charging by conduction, which requires touching.",
+      correctFeedback: "Exactly right.",
+      incorrectFeedback: "The key detail is whether the objects actually touch."
+    },
+    {
+      id: "q7",
+      prompt: "Sphere A has a charge of +6.0 μC. Sphere B, 4.0 cm to the right of A, has its charge changed to +3.00 μC (instead of −3.0 μC). What is the new magnitude of the force between them?",
+      hint: "Convert 4.0 cm to meters, then use F = k·q_A·q_B / r².",
+      options: [
+        { id: "a", text: "1.0×10² N" },
+        { id: "b", text: "2.0×10² N" },
+        { id: "c", text: "4.1 N" },
+        { id: "d", text: "10.1 N" }
+      ],
+      correct: "a",
+      explanation: "F = (9.0×10⁹)(6.0×10⁻⁶)(3.00×10⁻⁶)/(0.040)² ≈ 1.0×10² N (101 N). Since both charges are now positive, the force is repulsive, pushing the spheres apart instead of pulling them together.",
+      correctFeedback: "Correct — and note the charges are now like charges, so this force repels.",
+      incorrectFeedback: "Double check you used the new +3.00 μC value and squared the distance in meters."
+    },
+    {
+      id: "q8",
+      prompt: "Sphere A (+2.0×10⁻⁶ C) sits at the origin. Sphere B (−3.6×10⁻⁶ C) is 0.60 m away on the x-axis. What is the magnitude of the electrostatic force between them?",
+      hint: "F = k·q_A·q_B / r²",
+      options: [
+        { id: "a", text: "0.18 N" },
+        { id: "b", text: "0.065 N" },
+        { id: "c", text: "0.11 N" },
+        { id: "d", text: "1.8 N" }
+      ],
+      correct: "a",
+      explanation: "F = (9.0×10⁹)(2.0×10⁻⁶)(3.6×10⁻⁶)/(0.60)² ≈ 0.18 N. Skipping the division by r² entirely gives 0.065 N, and dividing by r instead of r² gives 0.11 N.",
+      correctFeedback: "That's the right magnitude.",
+      incorrectFeedback: "Check that r was squared before dividing."
+    },
+    {
+      id: "q9",
+      prompt: "One coulomb is equal to the combined charge of about 6.24×10¹⁸ electrons. Approximately how many electrons make up a charge of 2.0 C?",
+      hint: "Multiply the per-coulomb electron count by the number of coulombs.",
+      options: [
+        { id: "a", text: "1.2×10¹⁹ electrons" },
+        { id: "b", text: "6.24×10¹⁸ electrons" },
+        { id: "c", text: "3.12×10¹⁸ electrons" },
+        { id: "d", text: "1.2×10²⁰ electrons" }
+      ],
+      correct: "a",
+      explanation: "2.0 C × 6.24×10¹⁸ electrons/C ≈ 1.2×10¹⁹ electrons. Using the per-coulomb value without scaling it by 2.0 C gives 6.24×10¹⁸, which is the count for just 1 C.",
+      correctFeedback: "That's the right electron count.",
+      incorrectFeedback: "Make sure you scaled the per-coulomb value by 2.0 C."
+    },
+    {
+      id: "q10",
+      prompt: "According to Coulomb's law, if the distance between two point charges is tripled while the charges stay the same, how does the force between them change?",
+      options: [
+        { id: "a", text: "It becomes 1/9 as strong" },
+        { id: "b", text: "It becomes 1/3 as strong" },
+        { id: "c", text: "It stays the same" },
+        { id: "d", text: "It becomes 3 times as strong" }
+      ],
+      correct: "a",
+      explanation: "Coulomb's law states that force is inversely proportional to the square of the distance (F ∝ 1/r²). Tripling r means dividing the force by 3² = 9, so the new force is 1/9 of the original.",
+      correctFeedback: "Exactly — the inverse-square relationship.",
+      incorrectFeedback: "Remember that distance is squared in Coulomb's law, not used directly."
+    }
+  ];
+
+  function shuffleArray(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+    }
+    return a;
+  }
+
+  var state = {
+    idx: 0,
+    answers: new Array(QUESTIONS.length).fill(null),
+    visited: new Array(QUESTIONS.length).fill(false),
+    optionOrder: new Array(QUESTIONS.length).fill(null),
+    finished: false
+  };
+
+  var barsEl = document.getElementById('bars');
+  var cardEl = document.getElementById('card');
+
+  function score() {
+    var s = 0;
+    for (var i = 0; i < QUESTIONS.length; i++) {
+      if (state.answers[i] === QUESTIONS[i].correct) s++;
+    }
+    return s;
+  }
+
+  function renderBars() {
+    barsEl.innerHTML = '';
+    QUESTIONS.forEach(function (q, i) {
+      var b = document.createElement('button');
+      b.className = 'bar';
+      b.setAttribute('aria-label', 'Question ' + (i + 1));
+      var answer = state.answers[i];
+      if (answer !== null) {
+        b.classList.add(answer === q.correct ? 'correct' : 'incorrect');
+      } else if (i === state.idx && !state.finished) {
+        b.classList.add('current');
+      }
+      if (state.visited[i]) {
+        b.classList.add('visited');
+        b.addEventListener('click', function () {
+          state.finished = false;
+          state.idx = i;
+          render();
+        });
+      } else {
+        b.disabled = true;
+      }
+      barsEl.appendChild(b);
+    });
+  }
+
+  function renderQuestion() {
+    var i = state.idx;
+    var q = QUESTIONS[i];
+    state.visited[i] = true;
+    var answered = state.answers[i];
+
+    if (!state.optionOrder[i]) {
+      state.optionOrder[i] = shuffleArray(q.options);
+    }
+    var displayOptions = state.optionOrder[i];
+
+    var html = '';
+    html += '<p class="q-count">Question ' + (i + 1) + ' of ' + QUESTIONS.length + '</p>';
+    html += '<p class="prompt">' + q.prompt + '</p>';
+
+    if (q.hint) {
+      html += '<button class="hint-toggle" id="hintBtn" type="button">Need a hint?</button>';
+      html += '<div class="hint-text" id="hintText">' + q.hint + '</div>';
+    }
+
+    html += '<div class="options" id="optionsWrap">';
+    displayOptions.forEach(function (opt) {
+      var cls = 'option';
+      if (answered) {
+        if (opt.id === q.correct) cls += ' reveal-correct';
+        if (opt.id === answered && answered !== q.correct) cls += ' chosen-incorrect';
+        if (opt.id === answered && answered === q.correct) cls += ' chosen-correct';
+      }
+      html += '<button class="' + cls + '" data-opt="' + opt.id + '" ' + (answered ? 'disabled' : '') + '>' + opt.text + '</button>';
+    });
+    html += '</div>';
+
+    var fbClass = 'feedback';
+    var fbContent = '';
+    if (answered) {
+      var isCorrect = answered === q.correct;
+      fbClass += isCorrect ? ' is-correct shown' : ' is-incorrect shown';
+      fbContent = '<strong>' + (isCorrect ? q.correctFeedback : q.incorrectFeedback) + '</strong>' + q.explanation;
+    }
+    html += '<div class="' + fbClass + '" id="feedback">' + fbContent + '</div>';
+
+    html += '<div class="nav-row">';
+    html += '<button class="btn" id="backBtn" ' + (i === 0 ? 'disabled' : '') + '>Back</button>';
+    var isLast = i === QUESTIONS.length - 1;
+    html += '<button class="btn primary" id="nextBtn" ' + (answered ? '' : 'disabled') + '>' + (isLast ? 'See results' : 'Next') + '</button>';
+    html += '</div>';
+
+    cardEl.innerHTML = html;
+
+    if (q.hint) {
+      document.getElementById('hintBtn').addEventListener('click', function () {
+        document.getElementById('hintText').classList.toggle('shown');
+      });
+    }
+
+    document.querySelectorAll('#optionsWrap .option').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        if (state.answers[i] !== null) return;
+        state.answers[i] = btn.getAttribute('data-opt');
+        render();
+      });
+    });
+
+    document.getElementById('backBtn').addEventListener('click', function () {
+      state.idx = Math.max(0, i - 1);
+      render();
+    });
+
+    document.getElementById('nextBtn').addEventListener('click', function () {
+      if (isLast) {
+        state.finished = true;
+        render();
+      } else {
+        state.idx = i + 1;
+        render();
+      }
+    });
+  }
+
+  function renderResults() {
+    var s = score();
+    var total = QUESTIONS.length;
+    var msg;
+    if (s === total) {
+      msg = "Perfect score — charge, conductors and Coulomb's Law are all locked in.";
+    } else if (s >= total * 0.7) {
+      msg = "Solid work — review the ones you missed and it'll stick.";
+    } else if (s >= total * 0.4) {
+      msg = "Good start — worth another pass through Coulomb's Law and the sign conventions.";
+    } else {
+      msg = "Worth re-reading both lessons before trying again — the charge and force rules take practice.";
+    }
+
+    var html = '<div class="results">';
+    html += '<p class="score-label">Your score</p>';
+    html += '<p class="score-big">' + s + ' / ' + total + '</p>';
+    html += '<p class="score-msg">' + msg + '</p>';
+    html += '<button class="btn primary retake" id="retakeBtn">Retake quiz</button>';
+    html += '</div>';
+    cardEl.innerHTML = html;
+
+    document.getElementById('retakeBtn').addEventListener('click', function () {
+      state = {
+        idx: 0,
+        answers: new Array(QUESTIONS.length).fill(null),
+        visited: new Array(QUESTIONS.length).fill(false),
+        optionOrder: new Array(QUESTIONS.length).fill(null),
+        finished: false
+      };
+      render();
+    });
+  }
+
+  function render() {
+    renderBars();
+    if (state.finished) {
+      renderResults();
+    } else {
+      renderQuestion();
+    }
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>
